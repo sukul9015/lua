@@ -1,1 +1,0 @@
-print("Hey, I am from lua")
