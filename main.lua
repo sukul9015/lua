@@ -42,11 +42,11 @@ function love.update(dt)
             player.x = player.x + player.speed*dt
         end
     elseif love.keyboard.isDown('up', 'w') then
-        if player.y > 0 then
+        if player.y > (0 + player.img:getHeight()/2) then
             player.y = player.y - 10
         end
     elseif love.keyboard.isDown('down', 'z') then
-        if player.y < 650 then
+        if player.y < (680 - player.img:getHeight()/2)  then
             player.y = player.y + 10
         end
     end
