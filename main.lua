@@ -7,9 +7,25 @@ canShootTimer = canShootTimerMax
 bulletImg = nil
 bullets = {}
 
+createEnemyTimerMax = 0.4
+createEnemyTimer = createEnemyTimerMax
+enemyImg = nil
+enemies = {}
+
+isAlive = true
+score = 0
+
+function checkCollision(x1,y1,w1,h1,x2,y2,w2,h2)
+    return x1 < x2+w2 and
+           x2 < x1+w1 and
+           y1 < y2+h2 and
+           y2 < y1+h1
+end
+
 function love.load(arg)
     player.img = love.graphics.newImage("assets/img/plane.png")
     bulletImg = love.graphics.newImage("assets/img/bullet.png")
+    enemyImg = love.graphics.newImage("assets/img/enemy.png")
 end
 
 function love.update(dt)
@@ -44,11 +60,32 @@ function love.update(dt)
             table.remove(bullets,i)
         end
     end
+
+    createEnemyTimer = createEnemyTimer - (1 * dt)
+    if createEnemyTimer < 0 then
+        createEnemyTimer = createEnemyTimerMax
+
+        randomNumber = math.random(10, love.graphics.getWidth() - 10)
+        newEnemy = { x = randomNumber, y = -10, img = enemyImg }
+        table.insert(enemies, newEnemy)
+    end
+    for i, enemy in ipairs(enemies) do
+        enemy.y = enemy.y + (200 * dt)
+        
+        if enemy.y > 645 then
+            table.remove(enemies,i)
+        end
+    end
+
+    
 end
 
 function love.draw(dt)
     love.graphics.draw(player.img,player.x,player.y)
     for i,bullet in ipairs(bullets) do
         love.graphics.draw(bullet.img, bullet.x, bullet.y)
+    end
+    for i, enemy in ipairs(enemies) do
+        love.graphics.draw(enemy.img, enemy.x, enemy.y)
     end
 end
