@@ -41,6 +41,14 @@ function love.update(dt)
         if player.x <= (love.graphics.getWidth() - player.img:getWidth()) then
             player.x = player.x + player.speed*dt
         end
+    elseif love.keyboard.isDown('up', 'w') then
+        if player.y > 0 then
+            player.y = player.y - 10
+        end
+    elseif love.keyboard.isDown('down', 'z') then
+        if player.y < 650 then
+            player.y = player.y + 10
+        end
     end
 
     canShootTimer = canShootTimer - (1 * dt)
@@ -77,15 +85,48 @@ function love.update(dt)
         end
     end
 
-    
+    for i, enemy in ipairs(enemies) do
+        for j,bullet in ipairs(bullets) do
+            if checkCollision(enemy.x, enemy.y, enemy.img:getWidth(), enemy.img:getHeight(), bullet.x, bullet.y, bullet.img:getWidth(), bullet.img:getHeight()) then
+                table.remove(bullets,j)
+                table.remove(enemies,i)
+                score = score + 1
+            end
+        end
+
+        if checkCollision(enemy.x, enemy.y, enemy.img:getWidth(), enemy.img:getHeight(), player.x, player.y, player.img:getWidth(), player.img:getHeight()) 
+        and isAlive then
+            table.remove(enemies,i)
+            isAlive = false
+        end
+    end
+
+    if not isAlive and love.keyboard.isDown('r') then
+        bullets = {}
+        enemies = {}
+
+        canShootTimer = canShootTimerMax
+        createEnemyTimer = createEnemyTimerMax
+
+        player.x = 50
+        player.y = 645
+
+        score=0
+        isAlive=true
+    end
 end
 
 function love.draw(dt)
-    love.graphics.draw(player.img,player.x,player.y)
     for i,bullet in ipairs(bullets) do
         love.graphics.draw(bullet.img, bullet.x, bullet.y)
     end
     for i, enemy in ipairs(enemies) do
         love.graphics.draw(enemy.img, enemy.x, enemy.y)
     end
+    if isAlive then
+        love.graphics.draw(player.img, player.x, player.y)
+    else
+        love.graphics.print("Print 'R' to restart", love.graphics:getWidth()/2-50, love.graphics:getHeight()/2-10)
+    end
+    love.graphics.print("Score: "..score, 0, love.graphics:getHeight()/2-350)
 end
